@@ -15,7 +15,6 @@ Idea behind this project is to provide free (open source) alternative for Podpis
     * [KIR Szafir](#kir-szafir)
     * [Other vendors](#other-vendors)
 4. [Usage](#usage)
-    * [Generate certificate](#generate-self-signed-certificate)
     * [Configure and run](#configure-and-run)
     * [Slot number](#finding-a-slot-number)
 5. [Contribution](#contributing)
@@ -46,20 +45,15 @@ to remove this limitation (please feel free to submit Pull Request)
 _Please add description for other vendors if you will test application with it - submit PR or create issue._
 
 ## Usage
-### Generate self-signed certificate
-1. In `files` folder, run following command: `keytool -genkey -keyalg RSA -alias selfsigned -keystore server.jks -storepass password -validity 360 -keysize 2048`
-2. Prompts for certificate values will appear - you may keep default values.
-
 ### Configure and run
-1. Generate self-signed certificate as described above.
-2. Obtain PKCS11 library from your QES vendor - you can put it into `files` directory for convenience.
-3. Open `src/main/java/pl/podpisfree/Config.java`, adjust 4 configuration values (paths for keystore and library, keystore password, slot index).
-4. In project folder, run `./gradlew run`
-5. After compilation completes, you should see "Started" message in logs.
-6. Open web browser and navigate to <https://localhost:8641>
-7. Browser will notify you about insecure connection - accept and proceed to the web page. Depending on browser and OS 
+1. Obtain PKCS11 library from your QES vendor - you can put it into `files` directory for convenience.
+2. Open `src/main/java/pl/podpisfree/Config.java`, adjust paths for the library and slot index.
+3. In project folder, run `./gradlew run`
+4. When compilation completes, you should see "Started" message in logs.
+5. Open web browser and navigate to <https://localhost:8641>
+6. Browser will notify you about insecure connection - accept and proceed to the web page. Depending on browser and OS 
 you may need to add certificate of this page as trusted certificate. (this is self-signed certificate you generated on first step).
-8. You shall see `PodpisFree is ready` message in your browser.
+7. You shall see `PodpisFree is ready` message in your browser.
 
 ### Finding a slot number
 

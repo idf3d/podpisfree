@@ -35,6 +35,33 @@ checkstyle {
     configDirectory = rootProject.file("config")
 }
 
+tasks.create("genCert") {
+    tasks["run"].dependsOn(this)
+    doLast {
+        val targetDir = rootProject.file("files")
+        val keystoreFile = rootProject.file("files/server.jks")
+        if (!targetDir.exists()) {
+            mkdir(targetDir.path)
+        }
+        if (!keystoreFile.exists()) {
+            exec {
+                commandLine(
+                    "keytool",
+                        "-genkey",
+                        "-noprompt",
+                        "-dname", "CN=localhost",
+                        "-keyalg", "RSA",
+                        "-alias","selfsigned",
+                        "-keystore", keystoreFile.absolutePath,
+                        "-storepass", "password",
+                        "-validity", "360",
+                        "-keysize", "2048"
+                )
+            }
+        }
+    }
+}
+
 tasks.jar {
     manifest.attributes["Main-Class"] = "pl.podpisfree.Main"
 
