@@ -27,6 +27,7 @@ import static spark.Spark.port;
 import static spark.Spark.post;
 import static spark.Spark.secure;
 
+import java.security.KeyStore;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,11 @@ import pl.podpisfree.ui.PinWindow;
 import spark.Spark;
 
 public class Server {
-  Logger logger = LoggerFactory.getLogger(Server.class);
+  private final Logger logger = LoggerFactory.getLogger(Server.class);
 
-  AtomicReference<Certificates> certificates = new AtomicReference<>();
+  private final AtomicReference<Certificates> certificates = new AtomicReference<>();
+
+  private final AtomicReference<KeyStore.PasswordProtection> savedPIN = new AtomicReference<>();
 
   public void run() {
     ipAddress("127.0.0.1");
@@ -85,9 +88,12 @@ public class Server {
         logger.info("Certificates - confirmation received.");
 
         try {
-          CryptoCard card = CryptoCard.getInstance(pinWindow.password);
+          CryptoCard card = CryptoCard.getInstance(pinWindow.pin);
           Certificates response = new Certificates(card.getCertificate());
           card.close();
+          if (pinWindow.savePIN) {
+            savedPIN.set(pinWindow.pin);
+          }
           certificates.set(response);
           return response;
         } catch (Exception e) {
@@ -99,14 +105,20 @@ public class Server {
       post("/sign", (req, res) -> {
         SignRequest request = new SignRequest(req.body());
 
-        PinWindow pinWindow = PinWindow.getPinWindowForDocument(request.getData());
+        boolean havePIN = savedPIN.get() != null;
+        PinWindow pinWindow = PinWindow.getPinWindowForDocument(request.getData(), havePIN);
         if (!pinWindow.isConfirmed) {
           halt(422, "{}");
         }
 
         try {
           XMLSigner signer = new XMLSigner(request.getData());
-          CryptoCard card = CryptoCard.getInstance(pinWindow.password);
+          CryptoCard card;
+          if (havePIN && pinWindow.pin == null) {
+            card = CryptoCard.getInstance(savedPIN.get());
+          } else {
+            card = CryptoCard.getInstance(pinWindow.pin);
+          }
 
           Signature response = new Signature(
               card.getCertificate(),
@@ -115,6 +127,13 @@ public class Server {
           );
 
           card.close();
+
+          if (!pinWindow.savePIN) {
+            savedPIN.set(null);
+          } else if (pinWindow.pin != null) {
+            savedPIN.set(pinWindow.pin);
+          }
+
           return response;
         } catch (Exception e) {
           logger.error("Can not process 'sign' api request.", e);

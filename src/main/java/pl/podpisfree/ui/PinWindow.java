@@ -18,6 +18,7 @@
 package pl.podpisfree.ui;
 
 import java.awt.Button;
+import java.awt.Checkbox;
 import java.awt.Frame;
 import java.awt.Label;
 import java.awt.TextArea;
@@ -28,19 +29,21 @@ import org.slf4j.LoggerFactory;
 
 public class PinWindow extends Frame {
 
-  Logger logger = LoggerFactory.getLogger(PinWindow.class);
+  private final Logger logger = LoggerFactory.getLogger(PinWindow.class);
 
-  boolean click = false;
+  private boolean click = false;
 
-  public KeyStore.PasswordProtection password;
+  public KeyStore.PasswordProtection pin;
 
   public boolean isConfirmed;
 
-  public PinWindow(String confirmationMessage) {
+  public boolean savePIN;
 
-    final int widowWidth = 600;
+  public PinWindow(String confirmationMessage, boolean haveSavedPIN) {
 
-    setSize(widowWidth, 300);
+    final int windowWidth = 600;
+
+    setSize(windowWidth, 315);
     setTitle("podpisFree: PIN Request.");
     setLayout(null);
     setVisible(true);
@@ -49,7 +52,7 @@ public class PinWindow extends Frame {
 
     int currentY = 30;
     TextArea textArea = new TextArea();
-    textArea.setBounds(0, currentY, widowWidth, 200);
+    textArea.setBounds(0, currentY, windowWidth, 200);
     textArea.setText(confirmationMessage);
     textArea.setEditable(false);
 
@@ -74,10 +77,27 @@ public class PinWindow extends Frame {
     currentX += (int) textField.getBounds().getWidth();
     currentX += 10; // spacing
 
+    Checkbox savePinCheckbox = new Checkbox();
+    savePinCheckbox.setLabel("Save PIN");
+    savePinCheckbox.setBounds(currentX, currentY, 100, 30);
+    add(savePinCheckbox);
+
+    if (haveSavedPIN) {
+      savePinCheckbox.setState(true);
+      textField.setText("?".repeat(8));
+    }
+
+    currentX = textField.getBounds().x;
+    currentY += (int) label.getBounds().getHeight();
+    currentY += 5;
+
     Button confirmButton = new Button("Confirm");
     confirmButton.setBounds(currentX, currentY, 80, 30);
     confirmButton.addActionListener(e -> {
-      password = new KeyStore.PasswordProtection(textField.getText().toCharArray());
+      savePIN = savePinCheckbox.getState();
+      if (!"?".repeat(8).equals(textField.getText())) {
+        pin = new KeyStore.PasswordProtection(textField.getText().toCharArray());
+      }
       isConfirmed = true;
       setVisible(false);
       click = true;
@@ -118,13 +138,14 @@ public class PinWindow extends Frame {
                                     
             Once retrieved, subsequent requests for certificates will not require confirmation. \s
             If you will want to use different card - restart application.
-            """
+            """,
+        false
     );
     window.waitForInput();
     return window;
   }
 
-  public static PinWindow getPinWindowForDocument(byte[] data) {
+  public static PinWindow getPinWindowForDocument(byte[] data, boolean haveSavedPIN) {
     String documentToSign;
 
     try {
@@ -142,7 +163,8 @@ public class PinWindow extends Frame {
             + "Please review carefully. Signature may be equivalent to wet, handwritten signature."
             + " \n \n"
             + "------------------------------------------------------------- \n"
-            + documentToSign
+            + documentToSign,
+        haveSavedPIN
     );
     window.waitForInput();
     return window;
