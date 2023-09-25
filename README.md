@@ -77,4 +77,3 @@ selected properly and have different PIN, you can lock the PIN if too many attem
 submit PR to theirs repository or create fork - it is open-source library.
 3. Automatically detect slot index.
 4. Create UI for configuration.
-5. Create UI to show short, easy to read error message when error is thrown.

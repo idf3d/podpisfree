@@ -38,6 +38,7 @@ import pl.podpisfree.api.responses.Signature;
 import pl.podpisfree.api.responses.Version;
 import pl.podpisfree.crypto.CryptoCard;
 import pl.podpisfree.crypto.XMLSigner;
+import pl.podpisfree.ui.ErrorWindow;
 import pl.podpisfree.ui.PinWindow;
 import spark.Spark;
 
@@ -97,7 +98,8 @@ public class Server {
           certificates.set(response);
           return response;
         } catch (Exception e) {
-          logger.error("Can not process 'certificates' api request.", e);
+          logger.error("Can not process 'certificates' api request", e);
+          ErrorWindow.show(e);
           halt(500);
           return "{}";
         }
@@ -137,6 +139,7 @@ public class Server {
           return response;
         } catch (Exception e) {
           logger.error("Can not process 'sign' api request.", e);
+          ErrorWindow.show(e);
           halt(500);
           return "";
         }
