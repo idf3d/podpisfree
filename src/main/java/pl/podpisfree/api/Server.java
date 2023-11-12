@@ -107,6 +107,15 @@ public class Server {
       post("/sign", (req, res) -> {
         SignRequest request = new SignRequest(req.body());
 
+        if (!"SHA256".equals(request.getAlgorithm())) {
+          ErrorWindow.show(
+              "Unexpected digest algorithm, expected SHA256, but "
+                  + request.getAlgorithm() + "found"
+          );
+          halt(500);
+          return "";
+        }
+
         boolean havePIN = savedPIN.get() != null;
         PinWindow pinWindow = PinWindow.getPinWindowForDocument(request.getData(), havePIN);
         if (!pinWindow.isConfirmed) {

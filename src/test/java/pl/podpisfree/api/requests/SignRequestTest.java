@@ -47,4 +47,21 @@ class SignRequestTest {
     assertEquals(expectedStringRepresentation, request.toString());
     assertEquals("SHA256", request.getAlgorithm());
   }
+
+  @Test
+  void testThatItIsFailsafeForDigestAlgorithmIssues() {
+    String input = "{ "
+        + "\"tokenId\":\"my-token-id\", "
+        + "\"keyId\":\"my-key-id\", "
+        + "\"toBeSigned\": \"bXkgdGVzdCBkYXRhIHRvIHNpZ24=\", "
+        + "\"dige/stAlgorithm\":\"MD5\""
+        + "}";
+
+    SignRequest request = new SignRequest(input);
+    assertEquals("MD5", request.getAlgorithm());
+
+    input = input.replace("dige/stAlgorithm", "unexpected");
+    request = new SignRequest(input);
+    assertEquals("SHA256", request.getAlgorithm());
+  }
 }

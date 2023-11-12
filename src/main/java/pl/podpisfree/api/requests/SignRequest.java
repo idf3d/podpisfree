@@ -35,7 +35,21 @@ public class SignRequest {
     tokenId = (String) object.get("tokenId");
     keyId = (String) object.get("keyId");
     toBeSigned = (String) object.get("toBeSigned");
-    digestAlgorithm = (String) object.get("digestAlgorithm");
+
+    Object algorithm = object.opt("digestAlgorithm");
+    if (algorithm != null) {
+      digestAlgorithm = (String) algorithm;
+      return;
+    }
+
+    // Workaround for server-side issue. Noticed while signing a document.
+    algorithm = object.opt("dige/stAlgorithm");
+    if (algorithm != null) {
+      digestAlgorithm = (String) algorithm;
+    } else {
+      // At this time SHA256 is used anyway, so fallback for safety.
+      digestAlgorithm = "SHA256";
+    }
   }
 
   public byte[] getData() {
