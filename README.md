@@ -52,7 +52,7 @@ _Please add description for other vendors if you will test application with it -
 4. When compilation completes, you should see "Started" message in logs.
 5. Open web browser and navigate to <https://localhost:8641>
 6. Browser will notify you about insecure connection - accept and proceed to the web page. Depending on browser and OS 
-you may need to add certificate of this page as trusted certificate. (this is self-signed certificate you generated on first step).
+you may need to add certificate of this page as trusted certificate.
 7. You shall see `PodpisFree is ready` message in your browser.
 
 ### Finding a slot number
@@ -68,7 +68,7 @@ selected properly and have different PIN, you can lock the PIN if too many attem
 * Use only standard, cross-platform components for UI (awt should be fine).
 * Run `./gradlew check` before submitting PR.
 * It is recommended to sign commits with GPG key.
-* Do not commit proprietary libraries, non-free components, sensitive information to the repository.
+* Do not commit proprietary libraries, non-free components and sensitive information to the repository.
 * Write unit tests when possible.
 
 ### TODO list
