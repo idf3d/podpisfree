@@ -61,18 +61,35 @@ public class Server {
     get("/", (req, res) -> "<h2>PodpisFree is ready.</h2>");
     path("/rest", () -> {
       before("/*", (req, res) -> {
-        String method = req.requestMethod();
-        if (method.equals("GET") || method.equals("POST")) {
-          res.header("Access-Control-Allow-Origin", "*");
-          res.type("application/json");
+        String origin = req.headers("Origin");
+        if (origin != null) {
+          res.header("Access-Control-Allow-Origin", origin);
         }
+
+        String method = req.requestMethod();
+        if (!"GET".equals(method) && !"POST".equals(method)) {
+          return;
+        }
+
+        res.header("Access-Control-Allow-Headers", String.join(", ", req.headers()));
+        res.header("Access-Control-Allow-Credentials", "true");
+        res.type("application/json");
       });
 
       options("/*", (req, res) -> {
         res.status(204);
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "*");
-        return "";
+
+        String acHeaders = req.headers("Access-Control-Request-Headers");
+        if (acHeaders != null) {
+          res.header("Access-Control-Allow-Headers", acHeaders);
+        }
+
+        String acMethod = req.headers("Access-Control-Request-Method");
+        if (acMethod != null) {
+          res.header("Access-Control-Allow-Methods", acMethod);
+        }
+
+        return "OK";
       });
 
       get("/version", (req, res) -> new Version());
