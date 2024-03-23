@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     val dssVersion = "6.0"
-    val junitVersion = "5.10.1"
+    val junitVersion = "5.10.2"
 
     implementation("com.sparkjava:spark-core:2.9.4")
     implementation("org.slf4j:slf4j-simple:2.0.9")
@@ -23,7 +23,7 @@ dependencies {
     implementation("eu.europa.ec.joinup.sd-dss:dss-utils:$dssVersion")
     implementation("eu.europa.ec.joinup.sd-dss:dss-xades:$dssVersion")
     implementation("eu.europa.ec.joinup.sd-dss:dss-model:$dssVersion")
-    implementation("org.json:json:20231013")
+    implementation("org.json:json:20240303")
     implementation("org.w3c:dom:2.3.0-jaxb-1.0.6")
 
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
