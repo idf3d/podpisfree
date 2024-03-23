@@ -24,6 +24,7 @@ import java.awt.Label;
 import java.awt.TextArea;
 import java.awt.TextField;
 import java.security.KeyStore;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +146,11 @@ public class PinWindow extends Frame {
     return window;
   }
 
-  public static PinWindow getPinWindowForDocument(byte[] data, boolean haveSavedPIN) {
+  public static PinWindow getPinWindowForDocument(
+      byte[] data,
+      boolean haveSavedPIN,
+      Date certificateExpirationDate
+  ) {
     String documentToSign;
 
     try {
@@ -161,6 +166,8 @@ public class PinWindow extends Frame {
     PinWindow window = new PinWindow(
         "Remote side asks you to sign following document. \n"
             + "Please review carefully. Signature may be equivalent to wet, handwritten signature."
+            + " \n \n"
+            + "Your certificate expiration date is " + certificateExpirationDate.toString()
             + " \n \n"
             + "------------------------------------------------------------- \n"
             + documentToSign,

@@ -28,6 +28,8 @@ import static spark.Spark.post;
 import static spark.Spark.secure;
 
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,8 @@ public class Server {
   private final AtomicReference<Certificates> certificates = new AtomicReference<>();
 
   private final AtomicReference<KeyStore.PasswordProtection> savedPIN = new AtomicReference<>();
+
+  private final AtomicReference<Date> lastKnownExpirationDate = new AtomicReference<>();
 
   public void run() {
     ipAddress("127.0.0.1");
@@ -107,8 +111,11 @@ public class Server {
 
         try {
           CryptoCard card = CryptoCard.getInstance(pinWindow.pin);
-          Certificates response = new Certificates(card.getCertificate());
+          X509Certificate certificate = card.getCertificate();
           card.close();
+
+          lastKnownExpirationDate.set(certificate.getNotAfter());
+          Certificates response = new Certificates(certificate);
           if (pinWindow.savePIN) {
             savedPIN.set(pinWindow.pin);
           }
@@ -134,7 +141,11 @@ public class Server {
         }
 
         boolean havePIN = savedPIN.get() != null;
-        PinWindow pinWindow = PinWindow.getPinWindowForDocument(request.getData(), havePIN);
+        PinWindow pinWindow = PinWindow.getPinWindowForDocument(
+            request.getData(),
+            havePIN,
+            lastKnownExpirationDate.get()
+        );
         if (!pinWindow.isConfirmed) {
           halt(422, "{}");
         }
