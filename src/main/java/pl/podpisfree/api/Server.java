@@ -17,6 +17,7 @@
 
 package pl.podpisfree.api;
 
+import static spark.Spark.awaitInitialization;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -182,9 +183,21 @@ public class Server {
         }
       });
     });
+
+    awaitInitialization();
+    printInfo();
   }
 
   public void stop() {
     Spark.stop();
+  }
+
+  private void printInfo() {
+    logger.info("=".repeat(48));
+    logger.info("Please open https://localhost:8641/ in browser,");
+    logger.info("message \"PodpisFree is ready.\" should be shown.");
+    logger.info("If this is first run or locally generated certificate was recreated,");
+    logger.info("you may need to allow self-signed certificate in your browser.");
+    logger.info("=".repeat(48));
   }
 }

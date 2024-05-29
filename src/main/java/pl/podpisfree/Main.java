@@ -22,11 +22,12 @@ import pl.podpisfree.api.Server;
 public class Main {
   public static void main(String[] args) {
     Server server = new Server();
-    server.run();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       server.stop();
       System.out.println("\n\nBye.");
     }));
+
+    server.run();
   }
 }
