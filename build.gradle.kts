@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-    val dssVersion = "6.0"
-    val junitVersion = "5.10.2"
+    val dssVersion = "6.1"
+    val junitVersion = "5.11.2"
 
     implementation("com.sparkjava:spark-core:2.9.4")
     implementation("org.slf4j:slf4j-simple:2.0.9")
@@ -28,6 +28,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 application {
