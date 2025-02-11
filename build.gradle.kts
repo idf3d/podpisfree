@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    val dssVersion = "6.1"
+    val dssVersion = "6.2.RC1"
     val junitVersion = "5.11.2"
 
     implementation("com.sparkjava:spark-core:2.9.4")
